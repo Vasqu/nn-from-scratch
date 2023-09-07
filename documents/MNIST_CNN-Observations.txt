@@ -1,0 +1,102 @@
+Every single configuration uses a learning rate of 0.01 and 1 epoch!!
+
+****************************************************************
+****************************************************************
+
+
+No dev, no deep copy:
+
+		10k		54k		60k	
+--------------|-----------|--------------|--------------------
+runtime		16m/5m		-/5m		1h40m/5m
+--------------|-----------|--------------|--------------------
+training acc	0.8874		-		0.9456
+--------------|-----------|--------------|--------------------
+evaluation acc	0.8914		0.9559		0.9505
+--------------|-----------|--------------|--------------------
+
+
+****************************************************************
+****************************************************************
+
+
+Dev (>.2 improvement forced at least per 6k), no deep copy:
+
+		30k	
+--------------|-----------
+runtime		1h30m/5m		
+--------------|-----------
+dev acc		0.9305		
+--------------|-----------
+evaluation acc	0.9306		
+--------------|-----------
+
+
+****************************************************************
+****************************************************************
+
+
+No dev, deep copy:
+
+		60k	
+--------------|-----------
+runtime		1h48m/5.6m		
+--------------|-----------
+dev acc		0.94315		
+--------------|-----------
+evaluation acc	0.9476		
+--------------|-----------
+
+
+****************************************************************
+****************************************************************
+
+--> * very long runtime but less variance in the errors (~ more stable training) and less data needed to achieve better results
+    * rather simple cnn structure so performance may improve on added/other complexity
+    * dev set may be a viable option to let training end earlier if it goes well
+    * better optimisers and batch variants should also help a lot
+    
+    
+Problems noticed during MNIST adaption:
+    - unnecessary deep copies
+    - indexing issues in pooling
+    - flatten layer required
+    - delta bias on filters was wrong
+    - due to slow running more feedback via flags have been added
+    - convolution of any kind is the bottleneck, see according image in repo
+    - cpu usage is really restriced so that only one core is utilised <-> slow runtime (see torch for comparison)
+
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+
+- Improved cnn variant -
+
+
+Results on 5 runs each:
+(brackets indicated highest accuracy with higher precision)
+--------------|---------------------|----------------------------------
+--------------|---------------------|----------------------------------
+Learningrate  |	Number of epochs    | 	    Evaluation accuracy	 
+0.01          |        1            | .97, .95, .96, .97 (.9676), .95       
+0.01          |        2            | .97, .97, .97 (.9743), .97, .97     
+-----------------------------------------------------------------------
+
+
+--> * still adheres to the advantages given above 
+    * way faster implementation than before: ~12-14min for training and eval (eval takes around 1-2min)
+    * further improvement: ~6:50-8:50min (eval around 20 to 30s)
+    
+Problems noticed during this improvement:
+    - naive implementation with for loops major cause of poor performance
+    - using patch generators to adjust to a more "numpified" implementation
+    - adjust dimensionality to avoid further loops
+    - bias fix on conv filters
+    - smaller initial values for filters for more stable training
+    - avoidance of 0s via small softmax "bias" instead of cse adjustment 
+    - another bias fix..
+

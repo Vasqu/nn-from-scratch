@@ -1,0 +1,74 @@
+Worst/best of 5 runs on each config (learningrate x epochs):
+--------------|---------------------|---------------------|------------------------
+--------------|---------------------|---------------------|------------------------
+Learningrate  |	Number of epochs    | Training accuracy	  | Evaluation accuracy
+0.001         |        1            |    (0.62, 0.81)     |     (0.62, 0.81)
+0.001         |        2            |    (0.52, 0.70)     |     (0.53, 0.70)
+0.001         |        3            |    (0.74, 0.91)     |     (0.74, 0.90)
+--------------|---------------------|---------------------|------------------------
+0.01          |        1            |    (0.82, 0.92)     |     (0.82, 0.92)
+0.01          |        2            |    (0.84, 0.95)     |     (0.84, 0.94)
+0.01          |        3            |    (0.94, 0.95)     |     (0.94, 0.95)
+--------------|---------------------|---------------------|------------------------
+0.1           |        1            |    (0.09, 0.39)     |     (0.09, 0.40)
+0.1           |        2            |    (0.11, 0.29)     |     (0.11, 0.30)
+0.1           |        3            |    (0.09, 0.40)     |     (0.09, 0.40)
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+--> There is always some variance but overall 2 epochs with a learning rate of 0.01
+    performs the best (usually around 85%+ accuracy). A learning rate of 0.001 still
+    performs okay but benefits from each epoch significantly. At last, a 0.1 learning
+    rate seems to be too much, thus leading to a bad performance no matter how many
+    epochs. 
+    Some other thoughts: Maybe with a better optimiser such as Adam, we could counter
+    some problems leading to a more stable training (especially regarding the 0.1 lear-
+    ning rate). Other than that, the results may be taken with a grain of salt as the 
+    results are comprised of "just" 5 runs each which may not capture the variability
+    good enough. But, even then, it at least shows a clear trend. 
+
+P.S. Total training time for all 45 runs: 1h 9min
+
+
+On another note, the MNIST dataset revealed some issues with the initial implemen-
+tation:
+- Using bigger floats to avoid over-/underflows.
+- Avoiding divisions by zero + logs of zero in the cross entropy loss.
+- Normalising softmax to avoid overflows of the exponentials.
+- Changed wrong implementation of jacobi matrix.
+
+
+
+****************************************************************
+****************************************************************
+****************************************************************
+
+
+
+- Improved softmax / cse - 
+
+
+Worst/best of 5 runs on each config (learningrate x epochs):
+--------------|---------------------|-----------------------
+--------------|---------------------|-----------------------
+Learningrate  |	Number of epochs    | Evaluation accuracy
+0.001         |        1            |    (0.87, 0.88)
+0.001         |        2            |    (0.90, 0.90)
+0.001         |        3            |    (0.90, 0.91)
+--------------|---------------------|-----------------------
+0.01          |        1            |    (0.92, 0.93)
+0.01          |        2            |    (0.94, 0.94)
+0.01          |        3            |    (0.94, 0.95)
+--------------|---------------------|-----------------------
+0.1           |        1            |    (0.65, 0.79)
+0.1           |        2            |    (0.69, 0.80)
+0.1           |        3            |    (0.65, 0.79)
+------------------------------------------------------------
+------------------------------------------------------------
+
+--> * way more consistent results
+    * further improvement on runtime (2 epoch): 50-60s total (eval only a few seconds)
+
+Problems noticed during this improvement:
+    - cse over-/underflow required extended handling
+
